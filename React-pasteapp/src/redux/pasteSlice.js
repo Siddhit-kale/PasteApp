@@ -35,7 +35,7 @@ export const pasteSlice = createSlice({
       const paste = action.payload;
       const index = state.pastes.findIndex((item) => item.id === paste.id);
 
-      if (index > 0) {
+      if (index >= 0) {
         state.pastes[index] = paste;
 
         localStorage.setItem("pastes", JSON.stringify(state.pastes));
@@ -54,7 +54,7 @@ export const pasteSlice = createSlice({
       const pasteId = action.payload;
 
       console.log(pasteId);
-      const index = state.pastes.findIndex((item) => item.id === paste.id);
+      const index = state.pastes.findIndex((item) => item._id === pasteId);
 
       if (index > 0) {
         state.pastes.splice(index, 1);
