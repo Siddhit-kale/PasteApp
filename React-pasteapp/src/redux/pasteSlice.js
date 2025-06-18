@@ -14,9 +14,18 @@ export const pasteSlice = createSlice({
   reducers: {
     addtopaste: (state, action) => {
 
-      // create a condition there if the paste is already created with the title then it show toast already created with the title
+      
 
       const paste = action.payload;
+
+
+      // Check for existing paste with same title
+      const exists = state.pastes.some(item => item.title === paste.title);
+      if (exists) {
+        toast.error("Paste already created with this title");
+        return;
+      }
+
       state.pastes.push(paste);
       localStorage.setItem("pastes", JSON.stringify(state.pastes));
       toast("Paste created Sucessfully")
