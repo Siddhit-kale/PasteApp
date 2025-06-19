@@ -1,74 +1,72 @@
-import { createSlice } from '@reduxjs/toolkit'
-import toast from 'react-hot-toast';
+import { createSlice } from "@reduxjs/toolkit";
+import { toast } from "react-hot-toast";
 
+// 🔹 Load initial pastes from localStorage or fallback to empty array
 const initialState = {
   pastes: localStorage.getItem("pastes")
     ? JSON.parse(localStorage.getItem("pastes"))
-    : []
-}
+    : [],
+};
 
-export const pasteSlice = createSlice({
-  name: 'paste',
+const pasteSlice = createSlice({
+  name: "paste",
   initialState,
-
   reducers: {
-    addtopaste: (state, action) => {
-
-      
-
+    // 🔸 Add a new paste
+    addToPastes: (state, action) => {
       const paste = action.payload;
+      const index = state.pastes.findIndex((item) => item._id === paste._id);
 
-
-      // Check for existing paste with same title
-      const exists = state.pastes.some(item => item.title === paste.title);
-      if (exists) {
-        toast.error("Paste already created with this title");
+      if (index >= 0) {
+        toast.error("Paste already exists");
         return;
       }
 
       state.pastes.push(paste);
       localStorage.setItem("pastes", JSON.stringify(state.pastes));
-      toast("Paste created Sucessfully")
+      toast.success("Paste added");
     },
 
-    updatetopaste: (state, action) => {
+    // 🔸 Update an existing paste
+    updatePastes: (state, action) => {
       const paste = action.payload;
-      const index = state.pastes.findIndex((item) => item.id === paste.id);
+      const index = state.pastes.findIndex((item) => item._id === paste._id);
 
       if (index >= 0) {
         state.pastes[index] = paste;
-
         localStorage.setItem("pastes", JSON.stringify(state.pastes));
-
-        toast.success("paste Updated");
+        toast.success("Paste updated");
       }
     },
 
-    resetallpaste: (state, action) => {
-      state.pastes = [];
-
-      localStorage.removeItem("pastes");
-    },
-
-    remvoefrompaste: (state, action) => {
+    // 🔸 Remove a paste by ID
+    removeFromPastes: (state, action) => {
       const pasteId = action.payload;
-
-      console.log(pasteId);
       const index = state.pastes.findIndex((item) => item._id === pasteId);
 
-      if (index > 0) {
+      if (index >= 0) {
         state.pastes.splice(index, 1);
-
         localStorage.setItem("pastes", JSON.stringify(state.pastes));
-
-        toast.success("Paste Deleted");
+        toast.success("Paste deleted");
       }
     },
 
+    // 🔸 Reset all pastes
+    resetPaste: (state) => {
+      state.pastes = [];
+      localStorage.removeItem("pastes");
+      toast.success("All pastes cleared");
+    },
   },
-})
+});
 
-// Action creators are generated for each case reducer function
-export const { addtopaste, updatetopaste, resetallpaste, remvoefrompaste } = pasteSlice.actions
+// 🔹 Export all action creators
+export const {
+  addToPastes,
+  removeFromPastes,
+  updatePastes,
+  resetPaste,
+} = pasteSlice.actions;
 
-export default pasteSlice.reducer
+// 🔹 Export the reducer
+export default pasteSlice.reducer;

@@ -1,49 +1,61 @@
-import React, { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux';
-import { useParams, useSearchParams } from 'react-router-dom';
-import { addtopaste, updatetopaste } from '../redux/pasteSlice';
+import { Copy } from "lucide-react";
+import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
-const ViewPates = () => {
+const ViewPaste = () => {
+  const { id } = useParams();
+  const pastes = useSelector((state) => state.paste.pastes);
 
-    const {id} = useParams();
+  const paste = pastes.find((p) => p._id === id);
 
-    const allpaste = useSelector((state) => state.paste.pastes);
-
-    const pasteArray = allpaste.filter((p) => p._id === id)[0];
+  if (!paste) return null;
 
   return (
-    <div >
-            <div className='flex flex-row gap-4 mt-3 place-content-between'>
-            <input
-                className='p-2 mt-2 rounded-2xl w-[66%] pl-6 border-amber-50 border-2'
-                type='text'
-                placeholder='Enter your title'
-                value={pasteArray.title}
-                disabled
-                onChange={(e) => setTitle(e.target.value)}
+    <>
+      <Navbar />
+      <div className="w-full min-h-screen bg-[#0f172a] text-white py-12 px-4 md:px-10">
+        <div className="max-w-4xl mx-auto flex flex-col gap-y-6">
+          <input
+            type="text"
+            value={paste.title}
+            disabled
+            className="w-full text-xl font-semibold bg-[#1e293b] border border-gray-600 rounded-md p-3 text-white placeholder:text-gray-400"
+          />
+
+          <div className="relative w-full flex flex-col rounded-md bg-[#1e293b] border border-gray-600">
+            <div className="flex justify-between items-center border-b border-gray-600 px-4 py-2">
+              <div className="flex gap-2">
+                <span className="w-3 h-3 rounded-full bg-red-500" />
+                <span className="w-3 h-3 rounded-full bg-yellow-400" />
+                <span className="w-3 h-3 rounded-full bg-green-500" />
+              </div>
+
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(paste.content);
+                  toast.success("Copied to Clipboard");
+                }}
+                className="text-gray-300 hover:text-green-400 transition"
+                title="Copy Paste Content"
+              >
+                <Copy size={20} />
+              </button>
+            </div>
+
+            <textarea
+              value={paste.content}
+              disabled
+              rows={20}
+              className="w-full bg-transparent p-4 text-gray-200 resize-none focus:outline-none"
+              placeholder="No content to display."
             />
-
-            {/* <button onClick={createPaste} className='p-2 mt-2 rounded-2xl'>
-            {
-                pasteId ? "Update My Paste" : "Create My Paste"
-            }
-            </button> */}
-
+          </div>
         </div>
+      </div>
+    </>
+  );
+};
 
-        <div className='mt-4'>
-            <textarea 
-                className='rounded-2xl min-w-[500px] p-4 border-amber-50 border-2'
-                value={pasteArray.content}
-                disabled
-                placeholder='Enter Content here'
-                onChange={(e) => setValue(e.target.value)}
-                rows={20}
-            />
-        </div>
-
-        </div>
-  )
-}
-
-export default ViewPates
+export default ViewPaste;
